@@ -27,35 +27,8 @@ export default {
     // 初始化echartInstance对象
     initChart () {
       this.chartInstance = this.$echarts.init(this.$refs.seller_ref, 'chalk')
-      // 对图表对象进行鼠标事件的监听
-      this.chartInstance.on('mouseover', () => {
-        clearInterval(this.timerId)
-      })
-      this.chartInstance.on('mouseout', () => {
-        this.startInterval()
-      })
-    },
-    // 获取服务器的数据
-    async getData () {
-      // http://127.0.0.1:8888/api/seller
-      const { data: ret } = await this.$http.get('seller')
-      this.allData = ret
-      // 对数据排序
-      this.allData.sort((a, b) => a.value - b.value) // 从小到大的排序
-      // 每5个元素显示一页
-      this.totalPage = this.allData.length / 5 === 0 ? this.allData.length / 5 : Math.ceil(this.allData.length / 5)
-      this.updateChart()
-      // 启动定时器
-      this.startInterval()
-    },
-    // 更新图表
-    updateChart () {
-      const start = (this.currentPage - 1) * 5
-      const end = this.currentPage * 5
-      const showData = this.allData.slice(start, end)
-      const sellerNames = showData.map(item => item.name)
-      const sellerValues = showData.map(item => item.value)
-      const option = {
+      // 对图表初始化配置的控制
+      const initOption = {
         title: {
           text: '▎商家销售统计',
           textStyle: {
@@ -64,6 +37,7 @@ export default {
           left: 20,
           top: 20
         },
+        // 坐标轴位置
         grid: {
           top: '20%',
           left: '3%',
@@ -75,8 +49,7 @@ export default {
           type: 'value'
         },
         yAxis: {
-          type: 'category',
-          data: sellerNames
+          type: 'category'
         },
         // 柱状图条目背景
         tooltip: {
@@ -93,7 +66,6 @@ export default {
         series: [
           {
             type: 'bar',
-            data: sellerValues,
             barWidth: 66, // 柱状图条目宽度
             // 柱状图条目文字
             label: {
@@ -124,7 +96,47 @@ export default {
           }
         ]
       }
-      this.chartInstance.setOption(option)
+      this.chartInstance.setOption(initOption)
+      // 对图表对象进行鼠标事件的监听
+      this.chartInstance.on('mouseover', () => {
+        clearInterval(this.timerId)
+      })
+      this.chartInstance.on('mouseout', () => {
+        this.startInterval()
+      })
+    },
+    // 获取服务器的数据
+    async getData () {
+      // http://127.0.0.1:8888/api/seller
+      const { data: ret } = await this.$http.get('seller')
+      this.allData = ret
+      // 对数据排序
+      this.allData.sort((a, b) => a.value - b.value) // 从小到大的排序
+      // 每5个元素显示一页
+      this.totalPage = this.allData.length / 5 === 0 ? this.allData.length / 5 : Math.ceil(this.allData.length / 5)
+      this.updateChart()
+      // 启动定时器
+      this.startInterval()
+    },
+    // 更新图表
+    updateChart () {
+      const start = (this.currentPage - 1) * 5
+      const end = this.currentPage * 5
+      const showData = this.allData.slice(start, end)
+      const sellerNames = showData.map(item => item.name)
+      const sellerValues = showData.map(item => item.value)
+      // 获取数据之后的配置
+      const dataOption = {
+        yAxis: {
+          data: sellerNames
+        },
+        series: [
+          {
+            data: sellerValues
+          }
+        ]
+      }
+      this.chartInstance.setOption(dataOption)
     },
     startInterval () {
       if (this.timerId) {
