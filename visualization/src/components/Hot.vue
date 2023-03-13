@@ -35,15 +35,26 @@ export default {
       }
     }
   },
+  created () {
+    // 在组件创建完成之后 进行回调函数的注册
+    this.$socket.registerCallback('hotData', this.getData)
+  },
   mounted () {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'hotData',
+      chartName: 'hot',
+      value: ''
+    })
     // 初次渲染图表后主动触发 响应式配置
     this.screenAdaptor()
     window.addEventListener('resize', this.screenAdaptor)
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.screenAdaptor)
+    this.$socket.unRegisterCallback('hotData')
   },
   methods: {
     // 初始化图表的方法
@@ -98,9 +109,9 @@ export default {
       this.chartInstance.setOption(initOption)
     },
     // 发送请求，获取数据
-    async getData () {
+    getData (ret) {
       // 获取服务器的数据, 对this.allData进行赋值之后, 调用updateChart方法更新图表
-      const { data: ret } = await this.$http.get('hotproduct')
+      // const { data: ret } = await this.$http.get('hot')
       this.allData = ret
       this.updateChart()
     },

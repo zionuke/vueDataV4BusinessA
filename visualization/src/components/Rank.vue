@@ -18,9 +18,19 @@ export default {
     }
   },
   computed: {},
+  created () {
+    // 在组件创建完成之后 进行回调函数的注册
+    this.$socket.registerCallback('rankData', this.getData)
+  },
   mounted () {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'rankData',
+      chartName: 'rank',
+      value: ''
+    })
     // 初次渲染图表后主动触发 响应式配置
     this.screenAdaptor()
     window.addEventListener('resize', this.screenAdaptor)
@@ -28,6 +38,7 @@ export default {
   beforeDestroy () {
     window.removeEventListener('resize', this.screenAdaptor)
     clearInterval(this.timerId)
+    this.$socket.unRegisterCallback('rankData')
   },
   methods: {
     // 初始化图表的方法
@@ -72,9 +83,9 @@ export default {
       })
     },
     // 发送请求，获取数据
-    async getData () {
+    getData (ret) {
       // 获取服务器的数据, 对this.allData进行赋值之后, 调用updateChart方法更新图表
-      const { data: ret } = await this.$http.get('rank')
+      // const { data: ret } = await this.$http.get('rank')
       this.allData = ret
       // 对数据进行排序(从大到小)
       this.allData.sort((a, b) => b.value - a.value)

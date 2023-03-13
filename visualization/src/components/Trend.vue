@@ -57,15 +57,28 @@ export default {
       }
     }
   },
+  created () {
+    // 在组件创建完成之后，进行回调函数的注册
+    this.$socket.registerCallback('trendData', this.getData)
+  },
   mounted () {
     this.initChart()
-    this.getData()
+    // this.getData()
+    // websocket 请求数据，发送数据给服务器, 告诉服务器, 我现在需要数据
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'trendData',
+      chartName: 'trend',
+      value: ''
+    })
     // 初次渲染图表后主动触发 响应式配置
     this.screenAdaptor()
     window.addEventListener('resize', this.screenAdaptor)
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.screenAdaptor)
+    // 在组件销毁前, 销毁注册的回调函数
+    this.$socket.unRegisterCallback('trendData')
   },
   methods: {
     // 初始化图表的方法
@@ -99,9 +112,9 @@ export default {
       this.chartInstance.setOption(initOption)
     },
     // 发送请求，获取数据
-    async getData () {
+    getData (ret) {
       // ret 就是服务端发送给客户端的图表的数据，解构赋值
-      const { data: ret } = await this.$http.get('trend')
+      // const { data: ret } = await this.$http.get('trend')
       this.allData = ret
       this.updateChart()
     },

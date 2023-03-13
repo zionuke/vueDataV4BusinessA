@@ -19,15 +19,26 @@ export default {
     }
   },
   computed: {},
+  created () {
+    // 在组件创建完成之后 进行回调函数的注册
+    this.$socket.registerCallback('mapData', this.getData)
+  },
   mounted () {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'mapData',
+      chartName: 'map',
+      value: ''
+    })
     // 初次渲染图表后主动触发 响应式配置
     this.screenAdaptor()
     window.addEventListener('resize', this.screenAdaptor)
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.screenAdaptor)
+    this.$socket.unRegisterCallback('mapData')
   },
   methods: {
     // 初始化图表的方法
@@ -90,9 +101,9 @@ export default {
       })
     },
     // 发送请求，获取数据
-    async getData () {
+    getData (ret) {
       // 获取服务器的数据, 对 this.allData 进行赋值之后, 调用 updateChart 方法更新图表
-      const { data: ret } = await this.$http.get('map')
+      // const { data: ret } = await this.$http.get('map')
       this.allData = ret
       this.updateChart()
     },
