@@ -19,7 +19,7 @@ app.listen(8888, () => {
    console.log('Server Start Complete: http://localhost:8888')
 });
 
-const WebSocketService = require('service/web_socket_service')
+const WebSocketService = require('./service/web_socket_service') // 这里相对路径为啥必须加./表示当前目录?
 // 开启服务端的监听, 监听客户端的连接
 // 当某一个客户端连接成功之后, 就会对这个客户端进行 message 事件的监听
 WebSocketService.listen()
