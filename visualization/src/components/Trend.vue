@@ -189,7 +189,7 @@ export default {
           itemHeight: this.titleFontSize,
           itemGap: this.titleFontSize, // 间距
           textStyle: {
-            fontSize: this.titleFontSize / 2
+            fontSize: this.titleFontSize / 1.2
           }
         }
       }

@@ -62,12 +62,12 @@ export default {
       this.chartInstance = this.$echarts.init(this.$refs.hot_ref, 'chalk')
       const initOption = {
         title: {
-          text: '▎ 热销商品的占比',
+          text: '▎热销商品占比',
           left: 20,
           top: 20
         },
         legend: {
-          top: '10%',
+          top: '15%',
           icon: 'circle' // 图标类型 圆形
         },
         series: [
@@ -79,8 +79,10 @@ export default {
             // 高亮状态下的样式
             emphasis: {
               label: {
-                show: true
+                show: true,
+                formatter: '{b}:{d}%'
               },
+              // 连接文字的线条
               labelLine: {
                 show: false
               }
@@ -151,7 +153,7 @@ export default {
           itemHeight: this.titleFontSize,
           itemGap: this.titleFontSize / 2,
           textStyle: {
-            fontSize: this.titleFontSize / 2
+            fontSize: this.titleFontSize / 1.2
           }
         },
         series: [

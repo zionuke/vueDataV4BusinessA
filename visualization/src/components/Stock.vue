@@ -94,7 +94,7 @@ export default {
       const seriesArr = showData.map((item, index) => ({
         type: 'pie',
         // 设置成圆环图，外圆半径，内圆半径 在响应式处指定
-        // radius: [110, 100],
+        // radius: [110, 100], 不用在这设置，screenAdaptor中已设置
         center: centerArr[index], // 圆环圆心坐标
         hoverAnimation: false, // 关闭鼠标移入到饼图时的动画效果
         labelLine: {
@@ -157,8 +157,8 @@ export default {
       // 测试算出来的合适的字体大小
       const titleFontSize = (this.$refs.stock_ref.offsetWidth / 100) * 3.6
       // 圆环的内圆半径和外圆半径
-      const innerRadius = titleFontSize * 2
-      const outterRadius = innerRadius * 1.125
+      const innerRadius = titleFontSize * 2.8
+      const outerRadius = innerRadius * 1.125
       const adaptOption = {
         title: {
           textStyle: {
@@ -168,37 +168,37 @@ export default {
         series: [
           {
             type: 'pie',
-            radius: [outterRadius, innerRadius],
+            radius: [outerRadius, innerRadius],
             label: {
-              fontSize: titleFontSize / 2
+              fontSize: titleFontSize / 1.2
             }
           },
           {
             type: 'pie',
-            radius: [outterRadius, innerRadius],
+            radius: [outerRadius, innerRadius],
             label: {
-              fontSize: titleFontSize / 2
+              fontSize: titleFontSize / 1.2
             }
           },
           {
             type: 'pie',
-            radius: [outterRadius, innerRadius],
+            radius: [outerRadius, innerRadius],
             label: {
-              fontSize: titleFontSize / 2
+              fontSize: titleFontSize / 1.2
             }
           },
           {
             type: 'pie',
-            radius: [outterRadius, innerRadius],
+            radius: [outerRadius, innerRadius],
             label: {
-              fontSize: titleFontSize / 2
+              fontSize: titleFontSize / 1.2
             }
           },
           {
             type: 'pie',
-            radius: [outterRadius, innerRadius],
+            radius: [outerRadius, innerRadius],
             label: {
-              fontSize: titleFontSize / 2
+              fontSize: titleFontSize / 1.2
             }
           }
         ]

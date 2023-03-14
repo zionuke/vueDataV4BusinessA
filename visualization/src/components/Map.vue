@@ -53,7 +53,7 @@ export default {
       this.$echarts.registerMap('china', china.default)
       const initOption = {
         title: {
-          text: '▎ 商家分布',
+          text: '▎商家分布',
           left: 20,
           top: 20
         },
@@ -62,9 +62,16 @@ export default {
           map: 'china',
           top: '5%',
           bottom: '5%',
+          // 允许拖动及缩放
+          roam: true,
           itemStyle: {
             areaColor: '#2E72BF', // 地图的填充色
             borderColor: '#333' // 省份的边框色
+          },
+          label: {
+            show: true,
+            color: 'white',
+            formatter: '{a}'
           }
         },
         legend: {
@@ -120,7 +127,7 @@ export default {
         // 涟漪动画效果配置
         rippleEffect: {
           // 涟漪效果直径
-          scale: 5,
+          scale: 8,
           // 空心的涟漪动画效果
           brushType: 'stroke'
         },
