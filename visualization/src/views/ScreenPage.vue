@@ -1,25 +1,34 @@
 <template>
-  <div class="screen-container">
+  <div class="screen-container"
+       :style="containerStyle">
     <header class="screen-header">
       <div>
-        <img src="" alt="" />
+        <!-- 页面顶部的边框图片 -->
+        <img :src="headerSrc"
+             alt="" />
       </div>
       <span class="logo">
-        <img src="" alt="" />
+        <img src=""
+             alt="" />
       </span>
       <span class="title">电商平台实时监控系统</span>
       <div class="title-right">
-        <img src="" class="theme-switch" />
-        <span class="datetime">2049-01-01 00:00:00</span>
+        <!-- 切换主题按钮 -->
+        <img :src="themeSrc"
+             class="theme-switch"
+             @click="changeTheme">
+        <span class="datetime">{{ systemDateTime }}</span>
       </div>
     </header>
     <div class="screen-body">
       <section class="screen-left">
-        <div id="left-top" :class="{fullscreen: fullScreenStatus.trend}">
+        <div id="left-top"
+             :class="{ fullscreen: fullScreenStatus.trend }">
           <!-- 销量趋势图表 -->
           <Trend ref="trend"></Trend>
           <div class="resize">
-            <span @click="changeSize('trend')" :class="[
+            <span @click="changeSize('trend')"
+                  :class="[
               'iconfont',
               fullScreenStatus.trend
                 ? 'icon-compress-alt'
@@ -27,11 +36,13 @@
             ]"></span>
           </div>
         </div>
-        <div id="left-bottom" :class="{fullscreen: fullScreenStatus.seller}">
+        <div id="left-bottom"
+             :class="{ fullscreen: fullScreenStatus.seller }">
           <!-- 商家销售金额图表 -->
           <Seller ref="seller"></Seller>
           <div class="resize">
-            <span @click="changeSize('seller')" :class="[
+            <span @click="changeSize('seller')"
+                  :class="[
               'iconfont',
               fullScreenStatus.seller
                 ? 'icon-compress-alt'
@@ -41,11 +52,13 @@
         </div>
       </section>
       <section class="screen-middle">
-        <div id="middle-top" :class="{fullscreen: fullScreenStatus.map}">
+        <div id="middle-top"
+             :class="{ fullscreen: fullScreenStatus.map }">
           <!-- 商家分布图表 -->
           <Map ref="map"></Map>
           <div class="resize">
-            <span @click="changeSize('map')" :class="[
+            <span @click="changeSize('map')"
+                  :class="[
               'iconfont',
               fullScreenStatus.map
                 ? 'icon-compress-alt'
@@ -53,11 +66,13 @@
             ]"></span>
           </div>
         </div>
-        <div id="middle-bottom" :class="{fullscreen: fullScreenStatus.rank}">
+        <div id="middle-bottom"
+             :class="{ fullscreen: fullScreenStatus.rank }">
           <!-- 地区销量排行图表 -->
           <Rank ref="rank"></Rank>
           <div class="resize">
-            <span @click="changeSize('rank')" :class="[
+            <span @click="changeSize('rank')"
+                  :class="[
               'iconfont',
               fullScreenStatus.rank
                 ? 'icon-compress-alt'
@@ -67,11 +82,13 @@
         </div>
       </section>
       <section class="screen-right">
-        <div id="right-top" :class="{fullscreen: fullScreenStatus.hot}">
+        <div id="right-top"
+             :class="{ fullscreen: fullScreenStatus.hot }">
           <!-- 热销商品占比图表 -->
           <Hot ref="hot"></Hot>
           <div class="resize">
-            <span @click="changeSize('hot')" :class="[
+            <span @click="changeSize('hot')"
+                  :class="[
               'iconfont',
               fullScreenStatus.hot
                 ? 'icon-compress-alt'
@@ -79,11 +96,13 @@
             ]"></span>
           </div>
         </div>
-        <div id="right-bottom" :class="{fullscreen: fullScreenStatus.stock}">
+        <div id="right-bottom"
+             :class="{ fullscreen: fullScreenStatus.stock }">
           <!-- 库存销量分析图表 -->
           <Stock ref="stock"></Stock>
           <div class="resize">
-            <span @click="changeSize('stock')" :class="[
+            <span @click="changeSize('stock')"
+                  :class="[
               'iconfont',
               fullScreenStatus.stock
                 ? 'icon-compress-alt'
@@ -103,6 +122,8 @@ import Rank from '@/components/Rank.vue'
 import Seller from '@/components/Seller.vue'
 import Stock from '@/components/Stock.vue'
 import Trend from '@/components/Trend.vue'
+import { mapState } from 'vuex'
+import { getThemeValue } from '@/utils/theme_utils'
 
 export default {
   components: {
@@ -123,15 +144,45 @@ export default {
         rank: false,
         hot: false,
         stock: false
-      }
+      },
+      // 当前的系统时间
+      systemDateTime: new Date().toLocaleString(),
+      // 用于保存当前系统日期的定时器 id
+      timerID: undefined
     }
   },
+  computed: {
+    // 页面顶部的边框图片
+    headerSrc () {
+      return '/static/img/' + getThemeValue(this.theme).headerBorderSrc
+    },
+    // 切换主题按钮的图片路径
+    themeSrc () {
+      return '/static/img/' + getThemeValue(this.theme).themeSrc
+    },
+    // 背景颜色与标题文字颜色
+    containerStyle () {
+      return {
+        backgroundColor: getThemeValue(this.theme).backgroundColor,
+        color: getThemeValue(this.theme).titleColor
+      }
+    },
+    ...mapState(['theme'])
+  },
   created () {
-    // 注册接收到数据的回调函数
+    // 此时数据监测与代理完成，可以通过 vm 访问 data 中数据
+    this.currentTime()
+    // 注册服务端广播的全屏事件,完成多端联动
     this.$socket.registerCallback('fullScreen', this.recvData)
+    // 注册服务端广播的主题切换事件,完成多端联动
+    this.$socket.registerCallback('themeChange', this.recvThemeChange)
   },
   beforeDestroy () {
+    // 组件销毁前，销毁事件
     this.$socket.unRegisterCallback('fullScreen')
+    this.$socket.unRegisterCallback('themeChange')
+    // 组件销毁前，取消定时器
+    clearInterval(this.timerID)
   },
   methods: {
     // 改变图表尺寸
@@ -165,6 +216,29 @@ export default {
       this.$nextTick(() => {
         this.$refs[chartName].screenAdaptor()
       })
+    },
+    changeTheme () {
+      // 修改VueX中数据
+      // this.$store.commit('changeTheme')
+      this.$socket.send({
+        action: 'themeChange',
+        socketType: 'themeChange',
+        chartName: '',
+        value: ''
+      })
+    },
+    recvThemeChange () {
+      this.$store.commit('changeTheme')
+    },
+    // 返回当前时间，每秒+1
+    currentTime () {
+      this.systemDateTime = new Date().toLocaleString()
+      if (this.timerID) {
+        clearInterval(this.timerID)
+      }
+      this.timerID = setInterval(() => {
+        this.systemDateTime = new Date().toLocaleString()
+      }, 1000)
     }
   }
 }
@@ -197,7 +271,7 @@ export default {
   font-size: 20px;
   position: relative;
 
-  >div {
+  > div {
     img {
       width: 100%;
     }
@@ -231,17 +305,17 @@ export default {
     margin-left: 10px;
   }
 
-  .logo {
-    position: absolute;
-    left: 0px;
-    top: 50%;
-    transform: translateY(-80%);
+  // .logo {
+  //   position: absolute;
+  //   left: 0px;
+  //   top: 50%;
+  //   transform: translateY(-80%);
 
-    img {
-      height: 35px;
-      width: 128px;
-    }
-  }
+  //   img {
+  //     height: 35px;
+  //     width: 128px;
+  //   }
+  // }
 }
 
 .screen-body {

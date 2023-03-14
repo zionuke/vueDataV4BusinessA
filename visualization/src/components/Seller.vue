@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   // 商家销售统计
   name: 'Seller',
@@ -16,6 +17,17 @@ export default {
       currentPage: 1, // 当前显示的页数
       totalPage: 0, // 总页数
       timerId: null // 定时器标识
+    }
+  },
+  computed: {
+    ...mapState(['theme'])
+  },
+  watch: {
+    theme () {
+      this.chartInstance.dispose() // 销毁当前的图表
+      this.initChart() // 重新以最新的主题名称初始化图表对象
+      this.screenAdaptor() // 完成屏幕的适配
+      this.updateChart() // 更新图表的展示
     }
   },
   created () {
@@ -46,7 +58,7 @@ export default {
   methods: {
     // 初始化echartInstance对象
     initChart () {
-      this.chartInstance = this.$echarts.init(this.$refs.seller_ref, 'chalk')
+      this.chartInstance = this.$echarts.init(this.$refs.seller_ref, this.theme)
       // 对图表初始化配置的控制
       const initOption = {
         title: {

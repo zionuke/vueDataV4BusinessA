@@ -7,6 +7,7 @@
 <script>
 import axios from 'axios'
 import { getProvinceMapInfo } from '@/utils/map_utils'
+import { mapState } from 'vuex'
 
 export default {
   // 商家分布模块
@@ -18,7 +19,17 @@ export default {
       provinceMapData: {} // 获取的省份矢量地图数据的缓存
     }
   },
-  computed: {},
+  computed: {
+    ...mapState(['theme'])
+  },
+  watch: {
+    theme () {
+      this.chartInstance.dispose() // 销毁当前的图表
+      this.initChart() // 重新以最新的主题名称初始化图表对象
+      this.screenAdaptor() // 完成屏幕的适配
+      this.updateChart() // 更新图表的展示
+    }
+  },
   created () {
     // 在组件创建完成之后 进行回调函数的注册
     this.$socket.registerCallback('mapData', this.getData)
@@ -43,7 +54,7 @@ export default {
   methods: {
     // 初始化图表的方法
     async initChart () {
-      this.chartInstance = this.$echarts.init(this.$refs.map_ref, 'chalk')
+      this.chartInstance = this.$echarts.init(this.$refs.map_ref, this.theme)
       // 获取中国地图的矢量数据
       // http://localhost:8999/static/map/china.json
       // 由于我们现在获取的地图矢量数据并不是位于 KOA2 的后台, 所以咱们不能使用 this.$http，本地直接 import() 动态导入即可

@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   // 库存和销量展示
   name: 'Stock',
@@ -16,7 +17,17 @@ export default {
       timerId: null // 定时器标识
     }
   },
-  computed: {},
+  computed: {
+    ...mapState(['theme'])
+  },
+  watch: {
+    theme () {
+      this.chartInstance.dispose() // 销毁当前的图表
+      this.initChart() // 重新以最新的主题名称初始化图表对象
+      this.screenAdaptor() // 完成屏幕的适配
+      this.updateChart() // 更新图表的展示
+    }
+  },
   created () {
     // 在组件创建完成之后 进行回调函数的注册
     this.$socket.registerCallback('stockData', this.getData)
@@ -42,7 +53,7 @@ export default {
   methods: {
     // 初始化图表的方法
     initChart () {
-      this.chartInstance = this.$echarts.init(this.$refs.stock_ref, 'chalk')
+      this.chartInstance = this.$echarts.init(this.$refs.stock_ref, this.theme)
       const initOption = {
         title: {
           text: '▎库存和销量分析',

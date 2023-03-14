@@ -8,6 +8,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { getThemeValue } from '@/utils/theme_utils'
 export default {
   // 热销商品占比
   name: 'Hot',
@@ -31,8 +33,18 @@ export default {
     // 左右箭头和标题 css
     iconStyle () {
       return {
-        fontSize: this.titleFontSize + 'px'
+        fontSize: this.titleFontSize + 'px',
+        color: getThemeValue(this.theme).titleColor
       }
+    },
+    ...mapState(['theme'])
+  },
+  watch: {
+    theme () {
+      this.chartInstance.dispose() // 销毁当前的图表
+      this.initChart() // 重新以最新的主题名称初始化图表对象
+      this.screenAdaptor() // 完成屏幕的适配
+      this.updateChart() // 更新图表的展示
     }
   },
   created () {
@@ -59,7 +71,7 @@ export default {
   methods: {
     // 初始化图表的方法
     initChart () {
-      this.chartInstance = this.$echarts.init(this.$refs.hot_ref, 'chalk')
+      this.chartInstance = this.$echarts.init(this.$refs.hot_ref, this.theme)
       const initOption = {
         title: {
           text: '▎热销商品占比',
@@ -193,7 +205,6 @@ export default {
   top: 60%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: white;
 }
 .icon-right {
   position: absolute;
@@ -201,12 +212,10 @@ export default {
   top: 60%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: white;
 }
 .cat-name {
   position:absolute;
   left: 80%;
   bottom: 20px;
-  color: white;
 }
 </style>

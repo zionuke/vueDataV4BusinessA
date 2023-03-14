@@ -1,10 +1,10 @@
 <template>
   <div class="com-container">
-    <div class="title" :style="comStyle">
+    <div class="title" :style="comStyle" @click="showChoice = !showChoice">
       <span>▎{{showTitle}}</span>
-      <span class="iconfont title-icon" :style="comStyle" @click="showChoice = !showChoice">&#xe6eb;</span>
+      <span class="iconfont title-icon" :style="comStyle">&#xe6eb;</span>
       <div class="select-con" v-show="showChoice" :style="marginStyle">
-        <div class="select-item" v-for="item in selectTypes" :key="item.key" @click="handleSelect(item.key)">
+        <div class="select-item" v-for="item in selectTypes" :key="item.key" @click.stop="handleSelect(item.key)">
           {{item.text}}
         </div>
       </div>
@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { getThemeValue } from '@/utils/theme_utils'
 export default {
   // 销量趋势图表
   name: 'Trend',
@@ -47,14 +49,25 @@ export default {
     // 设置给标题的样式
     comStyle () {
       return {
-        fontSize: this.titleFontSize + 'px'
+        fontSize: this.titleFontSize + 'px',
+        color: getThemeValue(this.theme).titleColor
       }
     },
     // 将可选项与当前显示标题纵向对齐
     marginStyle () {
       return {
-        marginLeft: this.titleFontSize + 'px'
+        marginLeft: this.titleFontSize + 'px',
+        color: getThemeValue(this.theme).titleColor
       }
+    },
+    ...mapState(['theme'])
+  },
+  watch: {
+    theme () {
+      this.chartInstance.dispose() // 销毁当前的图表
+      this.initChart() // 重新以最新的主题名称初始化图表对象
+      this.screenAdaptor() // 完成屏幕的适配
+      this.updateChart() // 更新图表的展示
     }
   },
   created () {
@@ -83,7 +96,7 @@ export default {
   methods: {
     // 初始化图表的方法
     initChart () {
-      this.chartInstance = this.$echarts.init(this.$refs.trend_ref, 'chalk')
+      this.chartInstance = this.$echarts.init(this.$refs.trend_ref, this.theme)
       const initOption = {
         grid: {
           left: '3%',
@@ -104,8 +117,8 @@ export default {
           trigger: 'axis' // 当鼠标移入坐标轴时显示提示
         },
         legend: {
-          left: 20,
-          top: '15%',
+          left: 'center',
+          top: '18%',
           icon: 'circle' // 图例的 icon 类型
         }
       }
@@ -212,13 +225,9 @@ export default {
   left: 20px;
   top: 20px;
   z-index: 10;
-  color: white;
+  cursor: pointer;
   .title-icon {
     margin-left: 10px;
-    cursor: pointer;
-  }
-  .select-con {
-    background-color: #222733;
   }
 }
 </style>

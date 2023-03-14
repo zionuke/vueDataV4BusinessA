@@ -71,6 +71,7 @@ export default class SocketService {
         } else if (action === 'fullScreen') {
           this.#callbackMapping[socketType](recvData)
         } else if (action === 'themeChange') {
+          this.#callbackMapping[socketType](recvData)
         }
       }
     }
