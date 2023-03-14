@@ -2,46 +2,94 @@
   <div class="screen-container">
     <header class="screen-header">
       <div>
-        <img src="" alt="">
+        <img src="" alt="" />
       </div>
       <span class="logo">
         <img src="" alt="" />
       </span>
       <span class="title">电商平台实时监控系统</span>
       <div class="title-right">
-        <img src="" class="qiehuan">
+        <img src="" class="theme-switch" />
         <span class="datetime">2049-01-01 00:00:00</span>
       </div>
     </header>
     <div class="screen-body">
       <section class="screen-left">
-        <div id="left-top">
+        <div id="left-top" :class="{fullscreen: fullScreenStatus.trend}">
           <!-- 销量趋势图表 -->
-          <Trend></Trend>
+          <Trend ref="trend"></Trend>
+          <div class="resize">
+            <span @click="changeSize('trend')" :class="[
+              'iconfont',
+              fullScreenStatus.trend
+                ? 'icon-compress-alt'
+                : 'icon-expand-alt',
+            ]"></span>
+          </div>
         </div>
-        <div id="left-bottom">
+        <div id="left-bottom" :class="{fullscreen: fullScreenStatus.seller}">
           <!-- 商家销售金额图表 -->
-          <Seller></Seller>
+          <Seller ref="seller"></Seller>
+          <div class="resize">
+            <span @click="changeSize('seller')" :class="[
+              'iconfont',
+              fullScreenStatus.seller
+                ? 'icon-compress-alt'
+                : 'icon-expand-alt',
+            ]"></span>
+          </div>
         </div>
       </section>
       <section class="screen-middle">
-        <div id="middle-top">
+        <div id="middle-top" :class="{fullscreen: fullScreenStatus.map}">
           <!-- 商家分布图表 -->
           <Map ref="map"></Map>
+          <div class="resize">
+            <span @click="changeSize('map')" :class="[
+              'iconfont',
+              fullScreenStatus.map
+                ? 'icon-compress-alt'
+                : 'icon-expand-alt',
+            ]"></span>
+          </div>
         </div>
-        <div id="middle-bottom">
+        <div id="middle-bottom" :class="{fullscreen: fullScreenStatus.rank}">
           <!-- 地区销量排行图表 -->
           <Rank ref="rank"></Rank>
+          <div class="resize">
+            <span @click="changeSize('rank')" :class="[
+              'iconfont',
+              fullScreenStatus.rank
+                ? 'icon-compress-alt'
+                : 'icon-expand-alt',
+            ]"></span>
+          </div>
         </div>
       </section>
       <section class="screen-right">
-        <div id="right-top">
+        <div id="right-top" :class="{fullscreen: fullScreenStatus.hot}">
           <!-- 热销商品占比图表 -->
           <Hot ref="hot"></Hot>
+          <div class="resize">
+            <span @click="changeSize('hot')" :class="[
+              'iconfont',
+              fullScreenStatus.hot
+                ? 'icon-compress-alt'
+                : 'icon-expand-alt',
+            ]"></span>
+          </div>
         </div>
-        <div id="right-bottom">
+        <div id="right-bottom" :class="{fullscreen: fullScreenStatus.stock}">
           <!-- 库存销量分析图表 -->
           <Stock ref="stock"></Stock>
+          <div class="resize">
+            <span @click="changeSize('stock')" :class="[
+              'iconfont',
+              fullScreenStatus.stock
+                ? 'icon-compress-alt'
+                : 'icon-expand-alt',
+            ]"></span>
+          </div>
         </div>
       </section>
     </div>
@@ -66,16 +114,66 @@ export default {
     Trend
   },
   data () {
-    return {}
+    return {
+      // 定义每一个图表的全屏状态
+      fullScreenStatus: {
+        trend: false,
+        seller: false,
+        map: false,
+        rank: false,
+        hot: false,
+        stock: false
+      }
+    }
   },
-  methods: {}
+  created () {
+    // 注册接收到数据的回调函数
+    this.$socket.registerCallback('fullScreen', this.recvData)
+  },
+  beforeDestroy () {
+    this.$socket.unRegisterCallback('fullScreen')
+  },
+  methods: {
+    // 改变图表尺寸
+    changeSize (chartName) {
+      // 1.改变 fullScreenStatus 的数据
+      // this.fullScreenStatus[chartName] = !this.fullScreenStatus[chartName]
+      // 2.手动调用每个图表中的 screenAdaptor 触发响应式
+      // 当改变数据后，要基于更新后的新 DOM 进行某些操作时，要在 nextTick 所指定的回调函数中执行
+      // this.$nextTick(() => {
+      //   this.$refs[chartName].screenAdaptor()
+      // })
+      // 将数据发送给服务端
+      const targetValue = !this.fullScreenStatus[chartName]
+      this.$socket.send({
+        action: 'fullScreen',
+        socketType: 'fullScreen',
+        chartName,
+        value: targetValue
+      })
+    },
+    // 接收到全屏数据之后的处理
+    recvData (data) {
+      // 取出是哪一个图表需要进行切换
+      const chartName = data.chartName
+      // 取出, 切换成什么状态
+      const targetValue = data.value
+      // 1.改变 fullScreenStatus 的数据
+      this.fullScreenStatus[chartName] = targetValue
+      // 2.手动调用每个图表中的 screenAdaptor 触发响应式
+      // 当改变数据后，要基于更新后的新 DOM 进行某些操作时，要在 nextTick 所指定的回调函数中执行
+      this.$nextTick(() => {
+        this.$refs[chartName].screenAdaptor()
+      })
+    }
+  }
 }
 </script>
 
 <style lang="less" scoped>
 // 全屏样式的定义
 .fullscreen {
-  position: fixed!important;
+  position: fixed !important;
   top: 0 !important;
   left: 0 !important;
   width: 100% !important;
@@ -92,16 +190,19 @@ export default {
   color: #fff;
   box-sizing: border-box;
 }
+
 .screen-header {
   width: 100%;
   height: 64px;
   font-size: 20px;
   position: relative;
-  > div {
-      img {
-        width: 100%;
-      }
+
+  >div {
+    img {
+      width: 100%;
     }
+  }
+
   .title {
     position: absolute;
     left: 50%;
@@ -109,62 +210,74 @@ export default {
     font-size: 20px;
     transform: translate(-50%, -50%);
   }
+
   .title-right {
     display: flex;
     align-items: center;
-    position:absolute;
+    position: absolute;
     right: 0px;
     top: 50%;
     transform: translateY(-80%);
   }
-  .qiehuan {
+
+  .theme-switch {
     width: 28px;
     height: 21px;
     cursor: pointer;
   }
+
   .datetime {
     font-size: 15px;
     margin-left: 10px;
   }
+
   .logo {
     position: absolute;
     left: 0px;
     top: 50%;
     transform: translateY(-80%);
+
     img {
       height: 35px;
       width: 128px;
     }
   }
 }
+
 .screen-body {
   width: 100%;
   height: 100%;
   display: flex;
   margin-top: 10px;
+
   .screen-left {
     height: 100%;
     width: 27.6%;
+
     #left-top {
       height: 53%;
       position: relative;
     }
+
     #left-bottom {
       height: 31%;
       margin-top: 25px;
       position: relative;
     }
   }
+
   .screen-middle {
     height: 100%;
     width: 41.5%;
     margin-left: 1.6%;
     margin-right: 1.6%;
+
     #middle-top {
       width: 100%;
       height: 56%;
       position: relative;
     }
+
     #middle-bottom {
       margin-top: 25px;
       width: 100%;
@@ -172,18 +285,28 @@ export default {
       position: relative;
     }
   }
+
   .screen-right {
     height: 100%;
     width: 27.6%;
+
     #right-top {
       height: 46%;
       position: relative;
     }
+
     #right-bottom {
       height: 38%;
       margin-top: 25px;
       position: relative;
     }
   }
+}
+
+.resize {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  cursor: pointer;
 }
 </style>

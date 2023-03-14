@@ -158,8 +158,8 @@ export default {
         },
         series: [
           {
-            radius: this.titleFontSize * 4.5, // 饼图的半径
-            center: ['50%', '50%'] // 饼图圆心的位置 x,y(第四象限)
+            radius: this.titleFontSize * 4.8, // 饼图的半径
+            center: ['50%', '60%'] // 饼图圆心的位置 x,y(第四象限)
           }
         ]
       }
@@ -190,7 +190,7 @@ export default {
 .icon-left {
   position: absolute;
   left: 10%;
-  top: 50%;
+  top: 60%;
   transform: translateY(-50%);
   cursor: pointer;
   color: white;
@@ -198,7 +198,7 @@ export default {
 .icon-right {
   position: absolute;
   right: 10%;
-  top: 50%;
+  top: 60%;
   transform: translateY(-50%);
   cursor: pointer;
   color: white;

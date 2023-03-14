@@ -3,8 +3,8 @@ const fileUtils = require('../utils/file_utils')
 // 1.引入 websocket
 const WebSocket = require('ws')
 // 2.创建 WebSocket 服务端的对象, 绑定的端口号是9998
-const wss = new WebSocket.Server({
-	port: 9998,
+const wss = new WebSocket.Server({port: 9998}, () => {
+  console.log('websocket服务开启...')
 })
 // 服务端开启了监听
 module.exports.listen = () => {
@@ -16,7 +16,7 @@ module.exports.listen = () => {
 		// 对客户端的连接对象进行 message 事件的监听
 		// msg: 由客户端发给服务端的数据
 		client.on('message', async msg => {
-			console.log('客户端发送数据给服务端了: ' + msg)
+			console.info('客户端发送数据给服务端了: ' + msg)
 			const payload = JSON.parse(msg)
 			const action = payload.action
 			if (action === 'getData') {
@@ -39,5 +39,11 @@ module.exports.listen = () => {
 			// 由服务端往客户端发送数据
 			// client.send('hello socket from backend')
 		})
+    client.on('error', (e) => {
+      console.info('有客户端出错了...')
+    })
+    client.on('close', (e) => {
+      console.info('有客户端断开了...')
+    })
 	})
 }
