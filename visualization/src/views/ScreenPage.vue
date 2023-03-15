@@ -11,7 +11,7 @@
         <img src=""
              alt="" />
       </span>
-      <span class="title">电商平台实时监控系统</span>
+      <span class="title">商户运营可视化分析系统</span>
       <div class="title-right">
         <!-- 切换主题按钮 -->
         <img :src="themeSrc"

@@ -32,7 +32,7 @@ export default class SocketService {
       return console.log('您的浏览器不支持WebSocket')
     }
     // 连接服务器
-    this.#ws = new WebSocket('ws://localhost:9998')
+    this.#ws = new WebSocket('ws://47.120.6.231:9998')
 
     // 连接成功的事件
     this.#ws.onopen = () => {
