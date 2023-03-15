@@ -6,8 +6,8 @@ const cdn = {
   js: [
     "https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.min.js",
     "https://cdn.bootcdn.net/ajax/libs/vue-router/3.2.0/vue-router.min.js",
-    "https://cdn.bootcdn.net/ajax/libs/vuex/3.4.0/vuex.min.js",
-    "https://cdn.bootcdn.net/ajax/libs/axios/1.3.4/axios.min.js",
+    "https://cdn.bootcdn.net/ajax/libs/vuex/3.1.0/vuex.min.js",
+    "https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.min.js",
     "https://cdn.bootcdn.net/ajax/libs/echarts/4.8.0/echarts.min.js",
   ],
 };
