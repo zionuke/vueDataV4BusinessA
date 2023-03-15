@@ -4,8 +4,8 @@ import router from './router'
 import store from './store'
 import echarts from 'echarts'
 // 引入主题
-import '../public/static/theme/chalk'
-import '../public/static/theme/vintage'
+import './assets/theme/chalk'
+import './assets/theme/vintage'
 // import axios from 'axios'
 
 // 引入字体文件
