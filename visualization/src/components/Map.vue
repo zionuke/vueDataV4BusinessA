@@ -102,8 +102,12 @@ export default {
         // 判断当前所点击的这个省份的地图矢量数据是否已经存在
         if (!this.provinceMapData[provinceInfo.key]) {
           // 不存在： 发送请求,获取点击的地图的矢量数据
-          // 为什么这里不能import()+相对路径动态import const ret = await import(provinceInfo.path)
-          const ret = await axios.get('http://localhost:8999' + provinceInfo.path)
+          // 获取当前网页的绝对地址
+          const currentUrl = window.location.href
+          // 通过 replace 去除 # 和多余前缀的影响
+          const ret = await axios.get(`${currentUrl.replace('/#/screen', '') + provinceInfo.path}`)
+          // 为什么这里不能 import()+相对/绝对路径动态 import,即使路径正确也报错找不到 module
+          // const ret = await import(`${currentUrl.replace('/#/screen', '') + provinceInfo.path}`)
           // 把请求得到的数据缓存下来
           this.provinceMapData[provinceInfo.key] = ret.data
           // 注册点击的地图

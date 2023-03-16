@@ -154,11 +154,12 @@ export default {
   computed: {
     // 页面顶部的边框图片
     headerSrc () {
-      return '/static/img/' + getThemeValue(this.theme).headerBorderSrc
+      // 不要写绝对路径否则本地开发没问题部署肯定404
+      return require('../../public/static/img/' + getThemeValue(this.theme).headerBorderSrc)
     },
     // 切换主题按钮的图片路径
     themeSrc () {
-      return '/static/img/' + getThemeValue(this.theme).themeSrc
+      return require('../../public/static/img/' + getThemeValue(this.theme).themeSrc)
     },
     // 背景颜色与标题文字颜色
     containerStyle () {
