@@ -48,11 +48,6 @@ export default {
     }
   },
   created () {
-    // 在组件创建完成之后 进行回调函数的注册
-    this.$socket.registerCallback('hotData', this.getData)
-  },
-  mounted () {
-    this.initChart()
     // this.getData()
     this.$socket.send({
       action: 'getData',
@@ -60,6 +55,11 @@ export default {
       chartName: 'hot',
       value: ''
     })
+    // 在组件创建完成之后 进行回调函数的注册
+    this.$socket.registerCallback('hotData', this.getData)
+  },
+  mounted () {
+    this.initChart()
     // 初次渲染图表后主动触发 响应式配置
     this.screenAdaptor()
     window.addEventListener('resize', this.screenAdaptor)

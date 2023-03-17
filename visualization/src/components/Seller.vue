@@ -31,12 +31,6 @@ export default {
     }
   },
   created () {
-    // 在组件创建完成之后 进行回调函数的注册
-    this.$socket.registerCallback('sellerData', this.getData)
-  },
-  mounted () {
-    // 由于初始化使用到了 DOM 元素，因此需要在 mounted 生命周期钩子内调用
-    this.initChart()
     // this.getData()
     this.$socket.send({
       action: 'getData',
@@ -44,6 +38,12 @@ export default {
       chartName: 'seller',
       value: ''
     })
+    // 在组件创建完成之后 进行回调函数的注册
+    this.$socket.registerCallback('sellerData', this.getData)
+  },
+  mounted () {
+    // 由于初始化使用到了 DOM 元素，因此需要在 mounted 生命周期钩子内调用
+    this.initChart()
     // 在页面加载完成时, 主动对屏幕进行适配
     this.screenAdaptor()
     window.addEventListener('resize', this.screenAdaptor)

@@ -71,11 +71,6 @@ export default {
     }
   },
   created () {
-    // 在组件创建完成之后，进行回调函数的注册
-    this.$socket.registerCallback('trendData', this.getData)
-  },
-  mounted () {
-    this.initChart()
     // this.getData()
     // websocket 请求数据，发送数据给服务器, 告诉服务器, 我现在需要数据
     this.$socket.send({
@@ -84,6 +79,11 @@ export default {
       chartName: 'trend',
       value: ''
     })
+    // 在组件创建完成之后，进行回调函数的注册
+    this.$socket.registerCallback('trendData', this.getData)
+  },
+  mounted () {
+    this.initChart()
     // 初次渲染图表后主动触发 响应式配置
     this.screenAdaptor()
     window.addEventListener('resize', this.screenAdaptor)
