@@ -59,7 +59,7 @@ export default {
     // 初始化echartInstance对象
     initChart () {
       this.chartInstance = this.$echarts.init(this.$refs.seller_ref, this.theme)
-      // 对图表初始化配置的控制
+      // 初始化的图表配置项，和数据无关
       const initOption = {
         title: {
           text: '▎商家销售统计',
