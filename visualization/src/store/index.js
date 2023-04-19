@@ -5,14 +5,14 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    theme: 'chalk'
+    theme: 'dark'
   },
   mutations: {
     changeTheme (state) {
-      if (state.theme === 'chalk') {
+      if (state.theme === 'dark') {
         state.theme = 'vintage'
       } else {
-        state.theme = 'chalk'
+        state.theme = 'dark'
       }
     }
   },

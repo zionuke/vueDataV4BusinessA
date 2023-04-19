@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 import echarts from 'echarts'
 // 引入主题
-import './assets/theme/chalk'
+import './assets/theme/dark'
 import './assets/theme/vintage'
 // import axios from 'axios'
 
